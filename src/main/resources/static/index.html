@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Java 文档搜索</title>
+</head>
+<body>
+<!--整个页面元素的容器-->
+<div class="container">
+    <!--    搜索框 + 搜索按钮-->
+    <div class="header">
+        <input id="search" type="text">
+        <button onclick="search()">搜 &nbsp;&nbsp;&nbsp;&nbsp; 索</button>
+    </div>
+
+    <!--    展示结果-->
+    <div class="result">
+<!--        <div class="recode">-->
+<!--            <a href="#" class="title">这是链接</a>-->
+<!--            <div class="desc">10-May-2022 17:48:44.096 信息 [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory 把web 应用程序部署到目录 [D:\apache-tomcat-8.5.72\webapps\manager]-->
+<!--                10-May-2022 17:48:44.127 信息 [localhost-startStop-1] org.apache.catalina.startup.HostConfig.deployDirectory Web应用程序目录[D:\apache-tomcat-8.5.72\webapps\manager]的部署已在[30]毫秒内完成-->
+<!--            </div>-->
+<!--            <div class="url">https.www.baidu.com</div>-->
+<!--        </div>-->
+
+    </div>
+</div>
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    html, body {
+        height: 100%;
+        background-image: url("img/bgc3.jpg");
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    .container{
+        height: 100%;
+        width: 80%;
+        padding: 20px;
+        border-radius: 30px;
+        margin: 0 auto;
+        background-color:rgba(255, 255, 255, 0.7);
+        overflow: hidden;
+    }
+
+    .header{
+        width: 100%;
+        height: 40px;
+        margin-top: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-content: center;
+    }
+
+    .header input{
+        height: 50px;
+        width: 79%;
+        border: none;
+        border-radius: 50px;
+        font-size: 30px;
+        padding-left: 25px;
+        background-color: #d2e1ca;
+        color: black;
+        outline: none;
+    }
+
+    .header button{
+        font-size: 27px;
+        background-color: #b9cad9;
+        border-radius: 50px;
+        border: none;
+        width: 20%;
+        height: 50px;
+    }
+
+    .header button:active{
+        background-color: gray;
+    }
+
+    .result{
+        width: 100%;
+        height: calc(100% - 180px);
+        margin: 20px 10px;
+        overflow: auto;
+    }
+
+    .result .recode{
+        margin-top: 20px;
+    }
+
+    .recode .title{
+        display: block;
+        font-size: 24px;
+        color: darkcyan;
+        margin: 2px 0;
+        text-decoration: none;
+    }
+
+    .recode .desc{
+        font-size: 18px;
+        margin-bottom: 1px;
+    }
+
+    .recode .desc i{
+        color: rgb(230, 0, 0);
+        font-style: normal;
+    }
+
+    .recode .url{
+        font-size: 18px;
+        color: rgb(0,177,0);
+    }
+
+    .result .count_show{
+        color: gray;
+    }
+</style>
+
+<script src="js/jquery-3.6.0.min.js" type="text/javascript"></script>
+<script>
+    function search() {
+        let query = $("#search").val();
+        $.getJSON("/java_document/search",
+            {
+                "query": query
+            },
+            function (result) {
+                console.log(result);
+                if (result.status === -1){
+                    alert(result.data);
+                    return;
+                }
+                displayRecode(result.data);
+            }
+        )
+    }
+    function displayRecode(recodes) {
+        let parentNode = document.querySelector('.result');
+        parentNode.innerHTML = '';
+
+        // 展示搜索结果条数
+        let countDiv = document.createElement('div');
+        countDiv.innerHTML = "当前一共查找到 " + recodes.length + " 个结果! ";
+        countDiv.className = 'count_show';
+        parentNode.appendChild(countDiv);
+
+        for (let recode of recodes){
+            let recodeDiv = document.createElement('div');
+            recodeDiv.className = 'recode';
+
+            let titleA = document.createElement('a');
+            titleA.href = recode.url;
+            titleA.className = 'title';
+            titleA.innerHTML = recode.title;
+            titleA.target = '_blank';
+
+            let descDiv = document.createElement('div');
+            descDiv.className = 'desc';
+            descDiv.innerHTML = recode.desc;
+
+            let urlDiv = document.createElement('div');
+            urlDiv.className = 'url';
+            urlDiv.innerHTML = recode.url;
+
+            parentNode.appendChild(recodeDiv);
+            recodeDiv.appendChild(titleA);
+            recodeDiv.appendChild(descDiv);
+            recodeDiv.appendChild(urlDiv);
+        }
+    }
+</script>
+</body>
+
+
+</html>
